@@ -63,15 +63,15 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
         if x == 0:
             phi = 95.0  # central tower pinned at 95°
         else:
-            phi_calc = math.degrees(math.atan(abs(x)/d))
+            phi_calc = math.degrees(math.atan(abs(x) / d))
             phi = 95 + phi_calc if x > 0 else 95 - phi_calc
             phi = max(0, min(180, phi))
         color = 'red' if raw_angle > 3.0 else 'blue'
         top_deg = min(raw_angle, 40.0)
         towers_data.append((phi, top_deg, color))
 
-    # Set figure size and high resolution (dpi)
-    fig, ax = plt.subplots(figsize=(12, 3), dpi=150)
+    # Create a high-resolution figure with increased dpi.
+    fig, ax = plt.subplots(figsize=(12, 3), dpi=300)
     
     # Draw vertical grid lines only at every 10° on the horizontal axis.
     for xv in range(0, 181, 10):
@@ -119,10 +119,9 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
                  f"Classification={classification}, "
                  f"Intermediate={'YES' if triggers_intermediate else 'NO'}")
     
-    # Increase bottom margin so the text doesn't clash with the axis.
-    fig.subplots_adjust(bottom=0.4)
-    # Place the text slightly above the bottom of the figure.
-    fig.text(0.5, 0.1, main_text, ha='center', va='bottom', fontsize=10)
+    # Increase bottom margin and move the text higher so it doesn't clash with x-axis labels.
+    fig.subplots_adjust(bottom=0.35)
+    fig.text(0.5, 0.25, main_text, ha='center', va='bottom', fontsize=10)
     
     plt.tight_layout()
     return fig

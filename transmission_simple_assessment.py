@@ -120,7 +120,7 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
                  f"Intermediate={'YES' if triggers_intermediate else 'NO'}")
     
     # Increase bottom margin so the text doesn't clash with the axis.
-    fig.subplots_adjust(bottom=0.25)
+    fig.subplots_adjust(bottom=0.4)
     # Place the text slightly above the bottom of the figure.
     fig.text(0.5, 0.1, main_text, ha='center', va='bottom', fontsize=10)
     

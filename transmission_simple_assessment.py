@@ -114,11 +114,10 @@ def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, 
     plt.tight_layout()
     return fig
 
-# --- Streamlit Interface ---
+# --- Streamlit App Interface ---
 st.title("Simple Tower Assessment Tool")
 st.write("Enter the following values:")
 
-# Get user inputs with Streamlit widgets
 tower_height = st.number_input("Tower Height (m):", value=50.0, step=1.0)
 span = st.number_input("Span Between Towers (m):", value=100.0, step=1.0)
 turbine_height = st.number_input("Turbine Height (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
@@ -142,7 +141,7 @@ if st.button("Calculate"):
     st.write("**SIDE NOTE (Towers 0.1°..3°):**")
     st.write(f"Lower Range: {f_sub3}, Upper Range: {c_sub3}, Decimal: {dec_sub3:.2f}")
     
-    if st.checkbox("Show Alignment Chart"):
-        fig = visualize_towers(tower_height, span, turbine_height, f3, c3, d3, classification, triggers_intermediate)
-        if fig is not None:
-            st.pyplot(fig)
+    # Directly display the alignment chart after calculations
+    fig = visualize_towers(tower_height, span, turbine_height, f3, c3, d3, classification, triggers_intermediate)
+    if fig is not None:
+        st.pyplot(fig)

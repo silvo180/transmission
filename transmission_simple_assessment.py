@@ -70,8 +70,8 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
         top_deg = min(raw_angle, 40.0)
         towers_data.append((phi, top_deg, color))
 
-    # Set figure size so the plot is closer to scale.
-    fig, ax = plt.subplots(figsize=(12, 3))
+    # Set figure size and high resolution (dpi)
+    fig, ax = plt.subplots(figsize=(12, 3), dpi=150)
     
     # Draw vertical grid lines only at every 10° on the horizontal axis.
     for xv in range(0, 181, 10):
@@ -118,7 +118,12 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
     main_text = (f"Towers >3° => Lower={f3}, Upper={c3}, Decimal={d3:.2f}, "
                  f"Classification={classification}, "
                  f"Intermediate={'YES' if triggers_intermediate else 'NO'}")
-    fig.text(0.5, 0.01, main_text, ha='center', va='bottom', fontsize=9)
+    
+    # Increase bottom margin so the text doesn't clash with the axis.
+    fig.subplots_adjust(bottom=0.25)
+    # Place the text slightly above the bottom of the figure.
+    fig.text(0.5, 0.1, main_text, ha='center', va='bottom', fontsize=10)
+    
     plt.tight_layout()
     return fig
 

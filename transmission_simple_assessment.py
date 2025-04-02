@@ -71,7 +71,7 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
         towers_data.append((phi, top_deg, color))
 
     # Create a high-resolution figure with increased dpi.
-    fig, ax = plt.subplots(figsize=(12, 3), dpi=300)
+    fig, ax = plt.subplots(figsize=(12, 3), dpi=1200)
     
     # Draw vertical grid lines only at every 10° on the horizontal axis.
     for xv in range(0, 181, 10):

@@ -119,9 +119,9 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
                  f"Classification={classification}, "
                  f"Intermediate={'YES' if triggers_intermediate else 'NO'}")
     
-    # Increase bottom margin and move the text higher so it doesn't clash with x-axis labels.
-    fig.subplots_adjust(bottom=5)
-    fig.text(0.5, 0.25, main_text, ha='center', va='bottom', fontsize=10)
+    # Increase bottom margin and position the text lower so it appears below the x-axis label.
+    fig.subplots_adjust(bottom=0.45)
+    fig.text(0.5, 0.05, main_text, ha='center', va='bottom', fontsize=10)
     
     plt.tight_layout()
     return fig

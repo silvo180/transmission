@@ -3,7 +3,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
-# Function to classify the cell-count value.
 def classify_magnitude(value):
     if value <= 7:
         return "Very low"
@@ -16,20 +15,17 @@ def classify_magnitude(value):
     else:
         return "Very high"
 
-# Function to compute sums for tower assessment.
 def compute_sums(tower_height_m, span_between_towers_m, turbine_height_deg):
     angle_radians = math.radians(turbine_height_deg)
     if abs(math.tan(angle_radians)) < 1e-12:
         return (0, 0, 0.0), (0, 0, 0.0)
-
     d = tower_height_m / math.tan(angle_radians)
     floor_3p = 0
-    ceil_3p = 0
-    dec_3p = 0.0
-
+    ceil_3p  = 0
+    dec_3p   = 0.0
     floor_sub3 = 0
-    ceil_sub3 = 0
-    dec_sub3 = 0.0
+    ceil_sub3  = 0
+    dec_sub3   = 0.0
 
     for x in range(-4000, 4001, int(span_between_towers_m)):
         r = math.hypot(d, x)
@@ -38,55 +34,48 @@ def compute_sums(tower_height_m, span_between_towers_m, turbine_height_deg):
         raw_angle = math.degrees(math.atan(tower_height_m / r))
         if raw_angle < 0.1:
             continue
-
         if raw_angle > 3.0:
             floor_3p += math.floor(raw_angle)
-            ceil_3p += math.ceil(raw_angle)
-            dec_3p += raw_angle
+            ceil_3p  += math.ceil(raw_angle)
+            dec_3p   += raw_angle
         else:
             floor_sub3 += math.floor(raw_angle)
-            ceil_sub3 += math.ceil(raw_angle)
-            dec_sub3 += raw_angle
+            ceil_sub3  += math.ceil(raw_angle)
+            dec_sub3   += raw_angle
 
     return (floor_3p, ceil_3p, dec_3p), (floor_sub3, ceil_sub3, dec_sub3)
 
-# Function to create the tower visualization.
 def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, f3, c3, d3, classification, triggers_intermediate):
     angle_radians = math.radians(turbine_height_deg)
     if abs(math.tan(angle_radians)) < 1e-12:
         st.write("Angle too small.")
-        return
+        return None
 
     d = tower_height_m / math.tan(angle_radians)
     towers_data = []
-    
     for x in range(-4000, 4001, int(span_between_towers_m)):
         r = math.hypot(d, x)
         if r <= 0:
             continue
-
         raw_angle = math.degrees(math.atan(tower_height_m / r))
         if raw_angle < 0.1:
             continue
-
         if x == 0:
-            phi = 95.0  # Central tower fixed at 95°
+            phi = 95.0  # central tower pinned at 95°
         else:
-            phi_calc = math.degrees(math.atan(abs(x) / d))
+            phi_calc = math.degrees(math.atan(abs(x)/d))
             phi = 95 + phi_calc if x > 0 else 95 - phi_calc
             phi = max(0, min(180, phi))
-
         color = 'red' if raw_angle > 3.0 else 'blue'
         top_deg = min(raw_angle, 40.0)
         towers_data.append((phi, top_deg, color))
 
-    fig, ax = plt.subplots(figsize=(8, 6))
-
+    fig, ax = plt.subplots(figsize=(8,6))
+    # grid lines
     for xv in range(0, 181, 10):
         ax.axvline(x=xv, color='gray', lw=0.5, alpha=0.5)
     for yv in range(0, 41):
         ax.axhline(y=yv, color='gray', lw=0.5, alpha=0.5)
-
     ax.set_xticks(range(0, 181, 10))
     ax.set_yticks(range(0, 41, 1))
     ax.set_xlim(0, 180)
@@ -95,6 +84,7 @@ def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, 
     ax.set_ylabel("Vertical angle (°)")
     ax.set_title("Transmission Simple Assessment Tool")
 
+    # draw polygons
     for (phi, top_angle, color) in towers_data:
         if top_angle <= 0:
             continue
@@ -124,13 +114,14 @@ def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, 
     plt.tight_layout()
     return fig
 
-# --- Streamlit App Interface ---
+# --- Streamlit Interface ---
 st.title("Simple Tower Assessment Tool")
-st.write("Enter the values below:")
+st.write("Enter the following values:")
 
-tower_height = st.number_input("Enter Tower Height (m):", value=50.0, step=1.0)
-span = st.number_input("Enter Span Between Towers (m):", value=100.0, step=1.0)
-turbine_height = st.number_input("Enter Turbine Height (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
+# Get user inputs with Streamlit widgets
+tower_height = st.number_input("Tower Height (m):", value=50.0, step=1.0)
+span = st.number_input("Span Between Towers (m):", value=100.0, step=1.0)
+turbine_height = st.number_input("Turbine Height (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
 
 if st.button("Calculate"):
     (f3, c3, d3), (f_sub3, c_sub3, dec_sub3) = compute_sums(tower_height, span, turbine_height)
@@ -144,15 +135,14 @@ if st.button("Calculate"):
     st.write("---")
     st.write("**MAIN CALCULATIONS (Towers >3°):**")
     st.write(f"Lower Range: {f3}, Upper Range: {c3}, Decimal: {d3:.2f}")
-    st.write(f"Classification (based on {c3}): {classification}")
+    st.write(f"Classification: {classification}")
     if triggers_intermediate:
-        st.write("NOTE: sum(ceil) >3° >=16 => intermediate assessment.")
+        st.write("NOTE: sum(ceil) >3° >=16, triggering intermediate assessment.")
     st.write("")
     st.write("**SIDE NOTE (Towers 0.1°..3°):**")
     st.write(f"Lower Range: {f_sub3}, Upper Range: {c_sub3}, Decimal: {dec_sub3:.2f}")
-    st.write("(These are not included in the main magnitude sums.)")
-
-    if st.checkbox("View the alignment chart (>0.1° towers)?"):
+    
+    if st.checkbox("Show Alignment Chart"):
         fig = visualize_towers(tower_height, span, turbine_height, f3, c3, d3, classification, triggers_intermediate)
         if fig is not None:
             st.pyplot(fig)

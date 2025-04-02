@@ -105,8 +105,8 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
             (phi + 0.6 * base_half, arm1_y),
             (phi + 0.15 * base_half, arm1_y),
             (phi + 0.4 * base_half, arm2_y),
-            (phi + 0.05 * base_half, top_angle),
-            (phi - 0.05 * base_half, top_angle),
+            (phi + 0.05 * base_half, top_deg),
+            (phi - 0.05 * base_half, top_deg),
             (phi - 0.4 * base_half, arm2_y),
             (phi - 0.15 * base_half, arm1_y),
             (phi - 0.6 * base_half, arm1_y),
@@ -119,9 +119,9 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
                  f"Classification={classification}, "
                  f"Intermediate={'YES' if triggers_intermediate else 'NO'}")
     
-    # Increase bottom margin and position the text lower.
-    fig.subplots_adjust(bottom=0.5)
-    fig.text(0.5, 0.01, main_text, ha='center', va='bottom', fontsize=10)
+    # Increase bottom margin and position the text even further down.
+    fig.subplots_adjust(bottom=0.7)
+    fig.text(0.5, 0.0, main_text, ha='center', va='bottom', fontsize=10)
     
     plt.tight_layout()
     return fig

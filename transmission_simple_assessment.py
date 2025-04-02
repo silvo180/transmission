@@ -128,7 +128,7 @@ st.write("Enter the following values:")
 
 tower_height = st.number_input("Tower Height (m):", value=50.0, step=1.0)
 span = st.number_input("Span Between Towers (m):", value=100.0, step=1.0)
-tower_angle = st.number_input("Tower Height Angle (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
+tower_angle = st.number_input("Tower Height Angle (°):", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
 
 if st.button("Calculate"):
     (f3, c3, d3), (f_sub3, c_sub3, dec_sub3) = compute_sums(tower_height, span, tower_angle)
@@ -146,7 +146,7 @@ if st.button("Calculate"):
     if triggers_intermediate:
         st.write("NOTE: sum(ceil) >3° >=16, triggering intermediate assessment.")
     st.write("")
-    st.write("**SIDE NOTE (Towers 0.1°..3°):**")
+    st.write("**SIDE CALCULATION (Towers ≤3):**")
     st.write(f"Lower Range: {f_sub3}, Upper Range: {c_sub3}, Decimal: {dec_sub3:.2f}")
     
     # Directly display the alignment chart.

@@ -15,8 +15,8 @@ def classify_magnitude(value):
     else:
         return "Very high"
 
-def compute_sums(tower_height_m, span_between_towers_m, turbine_height_deg):
-    angle_radians = math.radians(turbine_height_deg)
+def compute_sums(tower_height_m, span_between_towers_m, tower_angle_deg):
+    angle_radians = math.radians(tower_angle_deg)
     if abs(math.tan(angle_radians)) < 1e-12:
         return (0, 0, 0.0), (0, 0, 0.0)
     d = tower_height_m / math.tan(angle_radians)
@@ -45,8 +45,8 @@ def compute_sums(tower_height_m, span_between_towers_m, turbine_height_deg):
 
     return (floor_3p, ceil_3p, dec_3p), (floor_sub3, ceil_sub3, dec_sub3)
 
-def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, f3, c3, d3, classification, triggers_intermediate):
-    angle_radians = math.radians(turbine_height_deg)
+def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3, c3, d3, classification, triggers_intermediate):
+    angle_radians = math.radians(tower_angle_deg)
     if abs(math.tan(angle_radians)) < 1e-12:
         st.write("Angle too small.")
         return None
@@ -70,21 +70,29 @@ def visualize_towers(tower_height_m, span_between_towers_m, turbine_height_deg, 
         top_deg = min(raw_angle, 40.0)
         towers_data.append((phi, top_deg, color))
 
-    fig, ax = plt.subplots(figsize=(8,6))
-    # grid lines
-    for xv in range(0, 181, 10):
+    # Set figure size so the plot is closer to scale.
+    fig, ax = plt.subplots(figsize=(12, 3))
+    
+    # Draw vertical grid lines for every degree
+    for xv in range(0, 181):
         ax.axvline(x=xv, color='gray', lw=0.5, alpha=0.5)
+    # Draw horizontal grid lines for every degree
     for yv in range(0, 41):
         ax.axhline(y=yv, color='gray', lw=0.5, alpha=0.5)
+
     ax.set_xticks(range(0, 181, 10))
-    ax.set_yticks(range(0, 41, 1))
+    # Label only every 5° on the vertical axis:
+    ax.set_yticks(range(0, 41, 5))
+    
     ax.set_xlim(0, 180)
     ax.set_ylim(0, 40)
     ax.set_xlabel("Horizontal angle (°)")
     ax.set_ylabel("Vertical angle (°)")
     ax.set_title("Transmission Simple Assessment Tool")
+    
+    # Ensure the plot is drawn to scale: one unit on x equals one unit on y.
+    ax.set_aspect('equal', adjustable='box')
 
-    # draw polygons
     for (phi, top_angle, color) in towers_data:
         if top_angle <= 0:
             continue
@@ -120,17 +128,17 @@ st.write("Enter the following values:")
 
 tower_height = st.number_input("Tower Height (m):", value=50.0, step=1.0)
 span = st.number_input("Span Between Towers (m):", value=100.0, step=1.0)
-turbine_height = st.number_input("Turbine Height (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
+tower_angle = st.number_input("Tower Height Angle (°) [1..20]:", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
 
 if st.button("Calculate"):
-    (f3, c3, d3), (f_sub3, c_sub3, dec_sub3) = compute_sums(tower_height, span, turbine_height)
+    (f3, c3, d3), (f_sub3, c_sub3, dec_sub3) = compute_sums(tower_height, span, tower_angle)
     classification = classify_magnitude(c3)
     triggers_intermediate = (c3 >= 16)
 
     st.subheader("RESULTS:")
     st.write(f"**Tower Height (m):** {tower_height}")
     st.write(f"**Span Between Towers (m):** {span}")
-    st.write(f"**Turbine Height (°):** {turbine_height:.1f}")
+    st.write(f"**Tower Height Angle (°):** {tower_angle:.1f}")
     st.write("---")
     st.write("**MAIN CALCULATIONS (Towers >3°):**")
     st.write(f"Lower Range: {f3}, Upper Range: {c3}, Decimal: {d3:.2f}")
@@ -141,7 +149,7 @@ if st.button("Calculate"):
     st.write("**SIDE NOTE (Towers 0.1°..3°):**")
     st.write(f"Lower Range: {f_sub3}, Upper Range: {c_sub3}, Decimal: {dec_sub3:.2f}")
     
-    # Directly display the alignment chart after calculations
-    fig = visualize_towers(tower_height, span, turbine_height, f3, c3, d3, classification, triggers_intermediate)
+    # Directly display the alignment chart
+    fig = visualize_towers(tower_height, span, tower_angle, f3, c3, d3, classification, triggers_intermediate)
     if fig is not None:
         st.pyplot(fig)

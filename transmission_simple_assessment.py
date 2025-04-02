@@ -73,15 +73,15 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
     # Set figure size so the plot is closer to scale.
     fig, ax = plt.subplots(figsize=(12, 3))
     
-    # Draw vertical grid lines for every degree
-    for xv in range(0, 181):
+    # Draw vertical grid lines only at every 10° on the horizontal axis.
+    for xv in range(0, 181, 10):
         ax.axvline(x=xv, color='gray', lw=0.5, alpha=0.5)
-    # Draw horizontal grid lines for every degree
+    # Draw horizontal grid lines for every degree on the vertical axis.
     for yv in range(0, 41):
         ax.axhline(y=yv, color='gray', lw=0.5, alpha=0.5)
 
     ax.set_xticks(range(0, 181, 10))
-    # Label only every 5° on the vertical axis:
+    # Label only every 5° on the vertical axis.
     ax.set_yticks(range(0, 41, 5))
     
     ax.set_xlim(0, 180)
@@ -90,7 +90,7 @@ def visualize_towers(tower_height_m, span_between_towers_m, tower_angle_deg, f3,
     ax.set_ylabel("Vertical angle (°)")
     ax.set_title("Transmission Simple Assessment Tool")
     
-    # Ensure the plot is drawn to scale: one unit on x equals one unit on y.
+    # Ensure the plot is drawn to scale.
     ax.set_aspect('equal', adjustable='box')
 
     for (phi, top_angle, color) in towers_data:
@@ -149,7 +149,7 @@ if st.button("Calculate"):
     st.write("**SIDE NOTE (Towers 0.1°..3°):**")
     st.write(f"Lower Range: {f_sub3}, Upper Range: {c_sub3}, Decimal: {dec_sub3:.2f}")
     
-    # Directly display the alignment chart
+    # Directly display the alignment chart.
     fig = visualize_towers(tower_height, span, tower_angle, f3, c3, d3, classification, triggers_intermediate)
     if fig is not None:
         st.pyplot(fig)
